@@ -1,0 +1,9 @@
+<?php
+$page = 'privacy';
+$page_title = 'Website privacy — ManasAI';
+$page_desc = 'How ManasAI handles website enquiries and information submitted through the contact form.';
+include __DIR__ . '/partials/header.php';
+?>
+<section class="container page-intro"><span class="eyebrow">Website privacy</span><h1>Your enquiry.<br><em>Handled with care.</em></h1><p>This page describes the website enquiry form. Any wearable study will need its own participant information, consent process, and data-use agreement.</p></section>
+<section class="container section section--compact prose"><h2>What you share</h2><p>The form asks for your name, email, an optional organisation, topic, and message. Please avoid including participant records, sensitive health information, or confidential research data in an initial enquiry.</p><h2>How the form works</h2><p>Your message is sent to ManasAI by email so our team can respond. The site uses a session cookie to protect the form and temporarily records a hash derived from your IP address to limit spam. Hosting and email providers may process technical logs and messages as part of delivering these services.</p><h2>Cookies and external resources</h2><p>This website does not include advertising or analytics scripts. It loads fonts from Google Fonts; your browser connects to Google to retrieve them. Links to other websites are subject to those sites’ privacy practices.</p><h2>Questions and requests</h2><p>To ask about access, correction, or deletion of information you sent us, write to <a href="mailto:admin@manasai.tech">admin@manasai.tech</a>. We use enquiry information to handle your request and related follow-up; it is not a subscription to marketing messages.</p><h2>Company</h2><p><?= htmlspecialchars($company['legal_name']) ?><br><?= htmlspecialchars($company['registered_office']) ?></p></section>
+<?php include __DIR__ . '/partials/footer.php'; ?>

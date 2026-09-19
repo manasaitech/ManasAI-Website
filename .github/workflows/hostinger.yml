@@ -1,0 +1,47 @@
+name: Publish Hostinger branch
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: hostinger-deployment
+  cancel-in-progress: false
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check PHP syntax
+        run: find . -name '*.php' -not -path './.git/*' -not -path './dist/*' -print0 | xargs -0 -n1 php -l
+      - name: Check export and page structure
+        run: |
+          python3 scripts/check_site.py
+          python3 scripts/check_contact.py
+      - name: Export runtime files
+        run: python3 scripts/export_hostinger.py
+      - name: Update deployment branch
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git show-ref --verify --quiet refs/remotes/origin/hostinger-deployment; then
+            git worktree add /tmp/manasai-deploy origin/hostinger-deployment
+          else
+            git worktree add --detach /tmp/manasai-deploy
+            git -C /tmp/manasai-deploy checkout --orphan hostinger-export
+          fi
+          rsync -a --delete --exclude=.git dist/hostinger/ /tmp/manasai-deploy/
+          git -C /tmp/manasai-deploy add -A
+          if git -C /tmp/manasai-deploy diff --cached --quiet; then
+            echo 'No runtime changes to publish.'
+            exit 0
+          fi
+          git -C /tmp/manasai-deploy commit -m "Publish website from ${SOURCE_SHA}"
+          git -C /tmp/manasai-deploy push origin HEAD:hostinger-deployment
